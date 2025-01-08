@@ -1,0 +1,39 @@
+name: "Close stale issues & PRs"
+
+# Controls when the action will run.
+# Run once a day at noon.
+on: 
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    name: Stale issue job
+    steps:
+    - uses: aws-actions/stale-issue-cleanup@v3
+      with:
+        # Setting messages to an empty string will cause the automation to skip
+        stale-issue-message: 'Greetings! It looks like this issue hasn’t been active in longer than two weeks. We encourage you to check if this is still an issue in the latest release. In the absence of more information, we will be closing this issue soon. If you find that this is still a problem, please feel free to provide a comment or upvote with a reaction on the initial post to prevent automatic closure. If the issue is already closed, please feel free to open a new one.'
+        # that category
+        stale-pr-message: 'This pull request is in the review stage. It has been 2 weeks with no response to feedback provided by the maintainers. Please comment with an update to indicate work you are still working on the pull request. Thanks!'
+
+        # These labels are required
+        stale-issue-label: closing-soon
+        exempt-issue-label: awaiting-approval
+        stale-pr-label: no-pr-activity
+        exempt-pr-label: awaiting-approval
+        response-requested-label: response-requested
+
+        # Don't set this to not apply a label when closing issues
+        closed-for-staleness-label: closed-for-staleness
+
+        # Issue timing
+        days-before-stale: 0
+        days-before-close: 1
+
+        minimum-upvotes-to-exempt: 2
+
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        loglevel: DEBUG
+        # Set dry-run to true to not perform label or close actions.
+        dry-run: true
