@@ -1,4 +1,4 @@
-name: Responded
+name: Contributor Responded
 on:
     issue_comment:
         types: [created, edited]
@@ -12,7 +12,7 @@ jobs:
       issues: write
     steps:
       - name: Add issue labels
-        run: gh issue edit "$NUMBER" --add-label "responded" --remove-label "response-requested,closing-soon"
+        run: gh issue edit "$NUMBER" --add-label "waiting-on-maintainers" --remove-label "response-requested,closing-soon"
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             GH_REPO: ${{ github.repository }}
@@ -25,7 +25,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Update pr labels
-        run: gh pr edit "$NUMBER" --add-label responded --remove-label "response-requested,no-pr-activity"
+        run: gh pr edit "$NUMBER" --add-label "waiting-on-maintainers" --remove-label "response-requested,no-pr-activity"
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             GH_REPO: ${{ github.repository }}
