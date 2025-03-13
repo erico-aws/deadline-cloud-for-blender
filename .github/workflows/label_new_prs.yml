@@ -1,10 +1,53 @@
 name: Label New Pull Requests
 
 on:
-    pull_request:
-        types: [opened, reopened]
+    workflow_run:
+        workflows: ["Record PR"]
+        types:
+        - completed
 
 jobs:
-    label-new-prs:
-        uses: aws-deadline/.github/.github/workflows/reusable_label_new_prs.yml@mainline
-        secrets: inherit
+  get_pr_id:
+    runs-on: ubuntu-latest
+    permissions: 
+      actions: read 
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} && ${{github.ref.repository}} == 'erico-aws/deadline-cloud-for-blender'
+    outputs:
+      prNumber: ${{ steps.prNumber.outputs.prNumber }}
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        - name: Download previously saved PR
+          uses: actions/github-script@v7.0.1
+          env:
+            WORKFLOW_ID: ${{ github.event.workflow_run.id }}
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const script = require('.github/scripts/download_pr_number.js')
+              await script({github, context, core})
+
+        - name: "Unzip PR artifact"
+          run: unzip pr.zip
+
+        - name: "Validate PR Number"
+          run: |
+            re='^[0-9]+$'
+            if ! [[ "$(cat pr.txt)" =~ $re ]] ; then 
+              exit 1
+            fi
+
+        - name: "Export Pull Request Number"
+          id: prNumber
+          run: echo prNumber="$(cat pr.txt)" >> "$GITHUB_OUTPUT" 
+
+  label-new-prs:
+      runs-on: ubuntu-latest
+      needs: get_pr_id
+      steps:
+          - name: Update pr labels
+            run: gh pr edit "$NUMBER" --add-label "waiting-on-maintainers"
+            env:
+              GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GH_REPO: ${{ github.repository }}
+              NUMBER: ${{ needs.get_pr_id.outputs.prNumber }}

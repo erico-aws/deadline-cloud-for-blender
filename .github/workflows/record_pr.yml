@@ -1,0 +1,10 @@
+name: Record PR
+
+on:
+    pull_request:
+        types: [opened, reopened]
+
+jobs:
+    record-pr:
+        uses: erico-aws/.github/.github/workflows/reusable_record_pr.yml@mainline
+        secrets: inherit
