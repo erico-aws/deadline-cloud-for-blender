@@ -18,8 +18,8 @@ jobs:
       id-token: write
       contents: write
     uses: erico-aws/.github/.github/workflows/reusable_publish_v2.yml@mainline
-    # with:
-    #   installer_oses: "['Linux', 'Windows']"
+    with:
+      installer_oses: "['Linux', 'Windows']"
     secrets: inherit
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
