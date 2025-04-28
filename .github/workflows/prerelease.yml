@@ -1,0 +1,16 @@
+name: "Prerelease"
+
+on:
+    workflow_dispatch:
+        inputs:
+            tag:
+                required: true
+                type: string
+
+jobs:
+    prerelease:
+        uses: erico-aws/.github/.github/workflows/reusable_prerelease.yml@mainline
+        secrets: inherit
+        with:
+            installer_oses: "['Linux', 'Windows', 'MacOS']"
+            tag: ${{inputs.tag}}
