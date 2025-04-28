@@ -1,12 +1,13 @@
 name: "Release: Publish"
-run-name: "Release: ${{ github.event.head_commit.message }}"
+run-name: "Release: ${{ inputs.tag }}"
 
 on:
-  push:
-    branches:
-      - mainline
-    paths:
-      - CHANGELOG.md
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: false
+        type: string
+        default: mainline
 
 concurrency:
   group: release
@@ -17,9 +18,10 @@ jobs:
     permissions:
       id-token: write
       contents: write
-    uses: aws-deadline/.github/.github/workflows/reusable_publish_v2.yml@mainline
+    uses: erico-aws/.github/.github/workflows/reusable_publish_v2.yml@mainline
     with:
       installer_oses: "['Linux', 'Windows', 'MacOS']"
+      tag: ${{inputs.tag}}
     secrets: inherit
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
@@ -33,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.Publish.outputs.tag }}
+          ref: ${{ inputs.tag }}
           fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
