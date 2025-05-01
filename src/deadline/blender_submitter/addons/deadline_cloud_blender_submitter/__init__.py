@@ -21,7 +21,7 @@ bl_info = {
     "name": "Deadline Cloud for Blender",
     "description": "Submit to AWS Deadline Cloud",
     "author": "AWS",
-    "version": (2, 1, 1),
+    "version": (2, 2, 0),
     "blender": (3, 6, 0),
     "category": "Render",
 }
